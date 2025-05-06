@@ -21,7 +21,7 @@ public class DataSeeder {
 
                 // Add initial products
                 productRepository.save(new Product(null, "Smartphone", "Latest model", 699.99, 10, null, electronics));
-                productRepository.save(new Product(null, "T-Shirt", "Cotton T-shirt", 19.99, 50, null, clothing));
+                productRepository.save(new Product(null, "T-Shirt", "Cotton T-shirt", 19.99, 50, "C:\\Users\\yacou\\Desktop\\p1.jpg", clothing));
             }
         };
     }

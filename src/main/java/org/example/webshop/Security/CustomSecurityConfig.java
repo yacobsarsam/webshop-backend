@@ -10,7 +10,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
+import java.util.List;
 @Configuration
 public class CustomSecurityConfig {
 
@@ -25,8 +25,7 @@ public class CustomSecurityConfig {
         http.csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login", "/register").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/products/**", "/category/**").permitAll() // Allow unauthenticated GET requests for Product and Category
+                        .requestMatchers("/auth/**").permitAll()                        .requestMatchers("/auth/login/", "/auth/register/").permitAll()
                         .requestMatchers(HttpMethod.POST, "/products/**", "/category/**").authenticated() // Require authentication for POST
                         .requestMatchers(HttpMethod.DELETE, "/products/**", "/category/**").authenticated() // Require authentication for DELETE
                         .requestMatchers(HttpMethod.PUT, "/products/**", "/category/**").authenticated() // Require authentication for PUT
@@ -38,7 +37,6 @@ public class CustomSecurityConfig {
         http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
-
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
         return configuration.getAuthenticationManager();
@@ -48,11 +46,13 @@ public class CustomSecurityConfig {
     public UrlBasedCorsConfigurationSource corsConfigurationSource() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
-        config.addAllowedOrigin("http://localhost:5173"); // React frontend URL
-        config.addAllowedMethod("*");
-        config.addAllowedHeader("*");
-        config.setAllowCredentials(true);
+        config.setAllowedOrigins(List.of("http://localhost:5173", "http://localhost:5174"));
+        config.addExposedHeader("Authorization"); // if your token is sent in this header
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(List.of("*"));
+        config.setAllowCredentials(true); // Only valid if NOT using wildcard origin
         source.registerCorsConfiguration("/**", config);
         return source;
     }
+
 }

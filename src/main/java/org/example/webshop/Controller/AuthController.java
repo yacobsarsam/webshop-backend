@@ -1,13 +1,20 @@
 package org.example.webshop.Controller;
 
+import org.example.webshop.Dtos.LoginDto;
+import org.example.webshop.Model.Role;
 import org.example.webshop.Model.User;
 import org.example.webshop.Repository.UserRepository;
 import org.example.webshop.Security.JwtUtil;
 import org.example.webshop.Services.CustomUserDetailsService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/auth")
@@ -29,12 +36,13 @@ public class AuthController {
         this.userDetailsService = userDetailsService;
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/register")
-    public ResponseEntity<String> registerUser(@RequestParam String username, @RequestParam String password) {
-        if (userRepository.findByUsername(username).isPresent()) {
+    public ResponseEntity<String> registerUser(@RequestParam String email, @RequestParam String password, @RequestParam Role role) {
+        if (userRepository.findByEmail(email).isPresent()) {
             return ResponseEntity.status(400).body("User already exists"); // HTTP 400 (Bad Request)
         }
-        User user = new User(null, username, passwordEncoder.encode(password), "ROLE_USER");
+        User user = new User(null, email, passwordEncoder.encode(password), role);
         userRepository.save(user);
         return ResponseEntity.status(201).body("User registered successfully"); // HTTP 201 (Created)
     }
@@ -47,28 +55,32 @@ public class AuthController {
     @GetMapping("/register")
     public ResponseEntity<String> register() {
         return ResponseEntity.ok("Register page"); // HTTP 200 (OK)
+
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody LoginDto loginRequest) {
+        String email = loginRequest.getEmail();
+        String password = loginRequest.getPassword();
+
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(email, password)
+            );
+
+            // Generate JWT using email
+            String token = jwtUtil.generateToken(email);
+
+            // Retrieve the user's role
+            UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+            String role = userDetails.getAuthorities().stream()
+                    .findFirst()
+                    .orElseThrow(() -> new RuntimeException("Role not found"))
+                    .getAuthority();
+            // Return token and role
+            return ResponseEntity.ok(Map.of("token", token, "role", role));
+        } catch (Exception e) {
+            return ResponseEntity.status(401).body("Invalid email or password");
+        }
     }
 }
-/*
-
-    @GetMapping("/login")
-    public String login() {
-        return "login";
-    }
-
-    @GetMapping("/register")
-    public String register() {
-        return "register";
-    }
-
-    @PostMapping("/register")
-    public String registerUser(String username, String password, Model model) {
-        if (userRepository.findByUsername(username).isPresent()) {
-            model.addAttribute("error", "User already exists");
-            return "register";
-        }
-        User user = new User(null, username, passwordEncoder.encode(password), "ROLE_USER");
-        userRepository.save(user);
-        return "redirect:/login";
-    }
- */

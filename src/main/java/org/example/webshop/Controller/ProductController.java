@@ -15,7 +15,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
 
 @RestController
 @RequestMapping("/products")
@@ -73,10 +72,21 @@ public class ProductController {
     */
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteproduct(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
         try {
             productServices.DeleteProduct(id);
             return ResponseEntity.ok().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(404).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(500).build();
+        }
+    }
+    @GetMapping("/{id}")
+    public ResponseEntity<ProductDto> getProduct(@PathVariable Long id) {
+        try {
+            ProductDto product = productServices.GetProduct(id);
+            return ResponseEntity.status(201).body(product);
         } catch (RuntimeException e) {
             return ResponseEntity.status(404).build();
         } catch (Exception e) {
@@ -122,7 +132,8 @@ public class ProductController {
 
     private String savePicture(MultipartFile picture, Long prodId) throws Exception {
         String uploadDir = "uploads"; // Directory to save pictures
-        String fileName = prodId + "_" + picture.getOriginalFilename();
+        String fileName = "picture" + prodId;
+        // String fileName = prodId + "_" + picture.getOriginalFilename();
         Path filePath = Paths.get(uploadDir, fileName);
 
         // Ensure the directory exists
