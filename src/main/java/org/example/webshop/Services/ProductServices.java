@@ -69,4 +69,24 @@ public class ProductServices implements IProductServices{
                 .toArray(ProductDto[]::new);
     }
 
+    @Override
+    public ProductDto UpdateProduct(ProductDto productDto) {
+        // Find the existing product by ID
+        Product existingProduct = productRepository.findById(productDto.getId())
+                .orElseThrow(() -> new RuntimeException("Product not found with id: " + productDto.getId()));
+
+        // Update the fields of the existing product
+        existingProduct.setName(productDto.getName());
+        existingProduct.setDescription(productDto.getDescription());
+        existingProduct.setQuantity(productDto.getQuantity());
+        existingProduct.setPrice(productDto.getPrice());
+        existingProduct.setCategory(new Category(productDto.getCategoryId())); // Assuming Category is set by ID
+        existingProduct.setPicturePath(productDto.getPicturePath());
+
+        // Save the updated product
+        Product updatedProduct = productRepository.save(existingProduct);
+
+        // Convert the updated product to a DTO and return it
+        return ProductDto.fromEntity(updatedProduct);
+    }
 }

@@ -25,7 +25,10 @@ public class CustomSecurityConfig {
         http.csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**").permitAll()                        .requestMatchers("/auth/login/", "/auth/register/").permitAll()
+                        .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/auth/login/").permitAll()
+                        .requestMatchers( "/auth/register/").authenticated()
+                        .requestMatchers(HttpMethod.GET,"/products/**", "/category/**").permitAll() // Allow GET requests to /category
                         .requestMatchers(HttpMethod.POST, "/products/**", "/category/**").authenticated() // Require authentication for POST
                         .requestMatchers(HttpMethod.DELETE, "/products/**", "/category/**").authenticated() // Require authentication for DELETE
                         .requestMatchers(HttpMethod.PUT, "/products/**", "/category/**").authenticated() // Require authentication for PUT

@@ -15,4 +15,6 @@ public interface IProductServices {
     ProductDto Addproduct(Product product);
     void DeleteProduct(Long id);
     ProductDto[] GetProductsByCategory(Category category);
+
+    ProductDto UpdateProduct(ProductDto productDto);
 }

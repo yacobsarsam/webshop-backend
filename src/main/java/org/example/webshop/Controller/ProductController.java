@@ -9,6 +9,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -70,7 +71,27 @@ public class ProductController {
         }
     }
     */
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+    @PutMapping("/{id}")
+    public ResponseEntity<ProductDto> updateProduct(
+            @PathVariable Long id,
+            @RequestBody ProductDto productDto) {
+        try {
+            // Set the product ID to ensure the correct product is updated
+            productDto.setId(id);
 
+            // Call the service to update the product
+            ProductDto updatedProduct = productServices.UpdateProduct(productDto);
+
+            return ResponseEntity.ok(updatedProduct); // Return the updated product
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(404).build(); // Return 404 if the product is not found
+        } catch (Exception e) {
+            return ResponseEntity.status(500).build(); // Return 500 for other errors
+        }
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
         try {
