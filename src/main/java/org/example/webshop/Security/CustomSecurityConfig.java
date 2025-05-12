@@ -25,15 +25,13 @@ public class CustomSecurityConfig {
         http.csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers("/auth/login/").permitAll()
-                        .requestMatchers( "/auth/register/").authenticated()
-                        .requestMatchers(HttpMethod.GET,"/products/**", "/category/**").permitAll() // Allow GET requests to /category
+                        .requestMatchers("/auth/login", "/auth/register").permitAll() // Public endpoints
+                        .requestMatchers(HttpMethod.GET, "/products/**", "/category/**").permitAll() // Require authentication for DELETE
                         .requestMatchers(HttpMethod.POST, "/products/**", "/category/**").authenticated() // Require authentication for POST
                         .requestMatchers(HttpMethod.DELETE, "/products/**", "/category/**").authenticated() // Require authentication for DELETE
                         .requestMatchers(HttpMethod.PUT, "/products/**", "/category/**").authenticated() // Require authentication for PUT
-                        .anyRequest().authenticated()
-
+                        .requestMatchers("/auth/register").hasAuthority("ADMIN") // Admin-only endpoint
+                        .anyRequest().authenticated() // Catch-all for other requests
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
@@ -41,8 +39,8 @@ public class CustomSecurityConfig {
         return http.build();
     }
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
-        return configuration.getAuthenticationManager();
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
     }
 
     @Bean

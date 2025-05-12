@@ -16,15 +16,18 @@ public class JwtUtil {
     private final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
     private final long expirationTime = 1000 * 60 * 60; // 1 hour
 
-    public String generateToken(String username) {
+    public String extractRole(String token) {
+        return extractClaims(token).get("role", String.class);
+    }
+    public String generateToken(String username, String role) {
         return Jwts.builder()
                 .setSubject(username)
+                .claim("role", "ROLE_" + role) // Add role as a claim
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expirationTime))
                 .signWith(key)
                 .compact();
     }
-
     public String validateToken(String token) {
         try {
             return Jwts.parserBuilder()
@@ -61,5 +64,12 @@ public class JwtUtil {
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
+    }
+    public boolean isTokenValid(String token) {
+        try {
+            return !isTokenExpired(token);
+        } catch (Exception e) {
+            return false;
+        }
     }
 }

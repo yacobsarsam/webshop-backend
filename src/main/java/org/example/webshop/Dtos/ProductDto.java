@@ -32,7 +32,7 @@ public class ProductDto {
 
     public Product toEntity(Category category) {
         return new Product(
-                this.id,
+                null,
                 this.name,
                 this.description,
                 this.price,

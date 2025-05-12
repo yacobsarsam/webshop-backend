@@ -35,4 +35,8 @@ public class CategoryService implements ICategoryService {
                 .orElseThrow(() -> new RuntimeException("Category not found with id: " + id));
         categoryRepository.delete(category);
     }
+
+    public Category getCategoryById(Long id) {
+        return categoryRepository.findById(id).orElse(null);
+    }
 }

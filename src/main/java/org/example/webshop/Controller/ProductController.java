@@ -2,6 +2,8 @@ package org.example.webshop.Controller;
 
 import org.example.webshop.Dtos.ProductDto;
 import org.example.webshop.Model.Category;
+import org.example.webshop.Model.Product;
+import org.example.webshop.Services.CategoryService;
 import org.example.webshop.Services.ProductServices;
 import org.springframework.data.domain.Page;
 
@@ -21,22 +23,12 @@ import java.nio.file.Paths;
 @RequestMapping("/products")
 public class ProductController {
     private final ProductServices productServices;
+    private final CategoryService categoryServices;
 
-    public ProductController(ProductServices productServices) {
+    public ProductController(ProductServices productServices, CategoryService categoryService) {
         this.productServices = productServices;
+        this.categoryServices=categoryService;
     }
-
-
-    //@GetMapping
-    //public ResponseEntity<List<ProductDto>> getAllProducts() {
-        //try {
-           // List<ProductDto> products = productServices.GetProducts();
-            //return ResponseEntity.ok(products);
-        //} catch (Exception e) {
-        //    return ResponseEntity.status(500).build();
-        //}
-   // }
-
 
     @GetMapping
     public ResponseEntity<Page<ProductDto>> getProducts(
@@ -126,12 +118,15 @@ public class ProductController {
             return ResponseEntity.status(500).build();
         }
     }
-
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @PostMapping(consumes = {"multipart/form-data"})
     public ResponseEntity<ProductDto> addProduct(
             @RequestPart("product") ProductDto productDto,
             @RequestPart(value = "picture", required = false) MultipartFile picture) {
         try {
+            System.out.println("Received ProductDto: " + productDto);
+            System.out.println("Picture is present: " + (picture != null));
+
             // Check if a picture is provided
             if (picture != null && !picture.isEmpty()) {
                 // Save the picture to the project directory
@@ -141,9 +136,12 @@ public class ProductController {
             }
 
             // Fetch the category and save the product
-            Category category = new Category();
-            category.setId(productDto.getCategoryId());
-            ProductDto createdProduct = productServices.Addproduct(productDto.toEntity(category));
+            Category category = categoryServices.getCategoryById(productDto.getCategoryId());
+            if (category == null) {
+                return ResponseEntity.status(404).body(null); // Return 404 if category not found
+            }
+            Product pdto= productDto.toEntity(category);
+            ProductDto createdProduct = productServices.Addproduct(pdto);
 
             return ResponseEntity.status(201).body(createdProduct);
         } catch (Exception e) {
