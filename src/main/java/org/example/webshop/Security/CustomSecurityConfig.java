@@ -29,7 +29,8 @@ public class CustomSecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/products/**", "/category/**").permitAll() // Require authentication for DELETE
                         .requestMatchers(HttpMethod.POST, "/products/**", "/category/**").authenticated() // Require authentication for POST
                         .requestMatchers(HttpMethod.DELETE, "/products/**", "/category/**").authenticated() // Require authentication for DELETE
-                        .requestMatchers(HttpMethod.PUT, "/products/**", "/category/**").authenticated() // Require authentication for PUT
+                        .requestMatchers(HttpMethod.PUT, "/products/**", "/category/**").authenticated()
+                        .requestMatchers( "/users/**").hasRole("ADMIN") // Require authentication for DELETE// Require authentication for PUT
                         .requestMatchers("/auth/register").hasAuthority("ADMIN") // Admin-only endpoint
                         .anyRequest().authenticated() // Catch-all for other requests
                 )

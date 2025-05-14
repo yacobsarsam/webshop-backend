@@ -22,9 +22,7 @@ public class CategoryDto {
     }
 
     public Category toEntity() {
-        Category category = new Category();
-        category.setId(this.id);
-        category.setName(this.name);
+        Category category = new Category(null, this.name);
         return category;
     }
 }

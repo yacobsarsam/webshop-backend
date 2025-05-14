@@ -12,8 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/category")
 public class CategoryController {
@@ -47,6 +45,25 @@ public class CategoryController {
         }
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+    @PutMapping("/{id}")
+    public ResponseEntity<CategoryDto> updateCategory(
+            @PathVariable Long id,
+            @RequestBody CategoryDto categoryDto) {
+        try {
+            // Set the category ID to ensure the correct category is updated
+            categoryDto.setId(id);
+
+            // Call the service to update the category
+            CategoryDto updatedCategory = categoryService.UpdateCategory(categoryDto);
+
+            return ResponseEntity.ok(updatedCategory); // Return the updated category
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(404).build(); // Return 404 if the category is not found
+        } catch (Exception e) {
+            return ResponseEntity.status(500).build(); // Return 500 for other errors
+        }
+    }
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCategory(@PathVariable Long id) {

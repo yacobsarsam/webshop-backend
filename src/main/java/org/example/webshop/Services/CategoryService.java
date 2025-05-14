@@ -39,4 +39,19 @@ public class CategoryService implements ICategoryService {
     public Category getCategoryById(Long id) {
         return categoryRepository.findById(id).orElse(null);
     }
+
+
+    public CategoryDto UpdateCategory(CategoryDto categoryDto) {
+        Category category = categoryRepository.findById(categoryDto.getId())
+                .orElseThrow(() -> new RuntimeException("Category not found"));
+
+        // Update the category fields
+        category.setName(categoryDto.getName());
+
+        // Save the updated category
+        Category updatedCategory = categoryRepository.save(category);
+
+        return CategoryDto.fromEntity(updatedCategory);
+    }
+
 }
