@@ -1,9 +1,10 @@
-FROM eclipse-temurin:21-jdk
-# Set the working directory
-WORKDIR /app
-# Copy the build artifact from Gradle build
-COPY build/libs/*.jar app.jar
-# Expose the port the app runs on
-EXPOSE 8080
-# Run the application
+# Stage 1: Build
+FROM gradle:8.3-jdk21 AS build
+COPY --chown=gradle:gradle . /home/gradle/project
+WORKDIR /home/gradle/project
+RUN gradle clean bootJar
+
+# Stage 2: Run
+FROM eclipse-temurin:21-jre
+COPY --from=build /home/gradle/project/build/libs/*.jar app.jar
 ENTRYPOINT ["java", "-jar", "app.jar"]
