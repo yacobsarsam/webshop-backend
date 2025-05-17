@@ -48,7 +48,7 @@ public class CustomSecurityConfig {
     public UrlBasedCorsConfigurationSource corsConfigurationSource() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("https://webshop-backend-7ljm.onrender.com", "http://localhost:5173", "http://localhost:5174"));
+        config.setAllowedOrigins(List.of("https://webshop-frontend-t7wl.onrender.com", "https://webshop-backend-7ljm.onrender.com", "http://localhost:5173", "http://localhost:5174"));
         config.addExposedHeader("Authorization"); // if your token is sent in this header
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
