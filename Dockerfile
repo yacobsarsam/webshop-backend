@@ -1,15 +1,19 @@
 ########################
 # Stage 1 – Build JAR  #
 ########################
-FROM gradle:8.3-jdk21 AS build
+FROM gradle:8.14-jdk21 AS build
 
 # ── Workdir for the project
 WORKDIR /home/gradle/project
 
-# ── Copy only files that rarely change first (better layer‑caching)
-COPY --chown=gradle:gradle build.gradle* settings.gradle* gradle.properties gradlew gradle/ ./
+# ── Copy Gradle wrapper files
+COPY --chown=gradle:gradle gradle/wrapper/ gradle/wrapper/
+COPY --chown=gradle:gradle gradlew .
 
-# ── Copy sources last – only rebuild when code changes
+# ── Copy build files
+COPY --chown=gradle:gradle build.gradle* settings.gradle* ./
+
+# ── Copy source files
 COPY --chown=gradle:gradle src ./src
 
 # ── Build the fat‑jar (no daemon → smaller image)
