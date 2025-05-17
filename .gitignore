@@ -1,40 +1,59 @@
-HELP.md
-.gradle
+# === Build directories ===
+.gradle/
 build/
 !gradle/wrapper/gradle-wrapper.jar
+
+# Ignore nested build/ or bin/ folders in source directories
 !**/src/main/**/build/
 !**/src/test/**/build/
-
-### STS ###
-.apt_generated
-.classpath
-.factorypath
-.project
-.settings
-.springBeans
-.sts4-cache
-bin/
 !**/src/main/**/bin/
 !**/src/test/**/bin/
+!**/src/main/**/out/
+!**/src/test/**/out/
 
-### IntelliJ IDEA ###
-.idea
+# === IDEs ===
+
+# IntelliJ IDEA
+.idea/
 *.iws
 *.iml
 *.ipr
 out/
-!**/src/main/**/out/
-!**/src/test/**/out/
 
-### NetBeans ###
+# Eclipse / Spring Tool Suite (STS)
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings/
+.springBeans
+.sts4-cache
+bin/
+
+# NetBeans
 /nbproject/private/
 /nbbuild/
 /dist/
 /nbdist/
 /.nb-gradle/
 
-### VS Code ###
+# VS Code
 .vscode/
 
-# Ignore application configuration files
+# === Docker ===
+.dockerignore
+*.tar
+
+# === Local Config Files ===
 src/main/resources/application-dev.properties
+.env
+
+# === Logs, reports ===
+*.log
+test-output/
+coverage/
+*.exec
+
+# === OS generated ===
+.DS_Store
+Thumbs.db
