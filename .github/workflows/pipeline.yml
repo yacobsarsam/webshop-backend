@@ -35,8 +35,13 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew clean build
 
+      # -------- NEW TAGGING & BUILD STEPS --------
+      - name: Get short Git SHA
+        id: vars
+        run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
       - name: Build Docker image
-        run: docker build -t webshop-backend:latest .
+        run: docker build -t webshop-backend:${{ steps.vars.outputs.sha_short }} .
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
@@ -45,9 +50,11 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Push Docker image to Docker Hub
-        run: docker tag webshop-backend:latest ${{ secrets.DOCKER_USERNAME }}/webshop-backend:latest && \
-             docker push ${{ secrets.DOCKER_USERNAME }}/webshop-backend:latest
-
+        run: |
+          docker tag webshop-backend:${{ steps.vars.outputs.sha_short }} ${{ secrets.DOCKER_USERNAME }}/webshop-backend:${{ steps.vars.outputs.sha_short }}
+          docker tag webshop-backend:${{ steps.vars.outputs.sha_short }} ${{ secrets.DOCKER_USERNAME }}/webshop-backend:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/webshop-backend:${{ steps.vars.outputs.sha_short }}
+          docker push ${{ secrets.DOCKER_USERNAME }}/webshop-backend:latest
   deploy:
     needs: build
     runs-on: ubuntu-latest
