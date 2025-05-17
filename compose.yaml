@@ -1,16 +1,16 @@
-services:
-  mysql:
-    image: 'mysql:latest'
-    container_name: mysql-container
-    restart: always
-    environment:
-      - 'MYSQL_DATABASE=localhost_webshop'
-      - 'MYSQL_PASSWORD=secret'
-      - 'MYSQL_ROOT_PASSWORD=verysecret'
-      - 'MYSQL_USER=myuser'
-    ports:
-      - '3306:3306'
-
-
-volumes:
-  db_data:
+#services:
+# postgres:
+#   image: postgres:latest
+#   container_name: postgres-container
+#   restart: always
+#   environment:
+#     - POSTGRES_DB=webshop
+#     - POSTGRES_USER=neondb_owner
+#     - POSTGRES_PASSWORD=npg_shp7OkutMBZ2
+#   ports:
+#     - '5432:5432'
+#   volumes:
+#     - db_data:/var/lib/postgresql/data
+#
+#volumes:
+# db_data:

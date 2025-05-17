@@ -41,6 +41,9 @@ dependencies {
 	testImplementation("org.springframework.security:spring-security-test")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 	implementation("me.paulschwarz:spring-dotenv:3.0.0")
+	implementation ("org.springframework.boot:spring-boot-starter-data-jpa")
+	implementation ("org.postgresql:postgresql")
+	testRuntimeOnly("com.h2database:h2")
 }
 
 tasks.withType<Test> {
