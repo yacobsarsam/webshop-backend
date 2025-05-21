@@ -57,3 +57,7 @@ coverage/
 # === OS generated ===
 .DS_Store
 Thumbs.db
+# Ignore application configuration files
+src/main/resources/application.properties
+src/main/resources/application-prod.properties
+
