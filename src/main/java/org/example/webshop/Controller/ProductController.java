@@ -38,8 +38,16 @@ public class ProductController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         try {
+            Sort sort = Sort.by("id"); // Default sorting by ID
+            if (ordering != null) {
+                if (ordering.startsWith("-")) {
+                    sort = Sort.by(ordering.substring(1)).descending(); // Descending order
+                } else {
+                    sort = Sort.by(ordering).ascending(); // Ascending order
+                }
+            }
             // Create a Pageable object with sorting
-            Pageable pageable = PageRequest.of(page, size, Sort.by(ordering != null ? ordering : "id"));
+            Pageable pageable = PageRequest.of(page, size, sort);
 
             // Fetch products with filters
             Page<ProductDto> products = productServices.GetFilterdProducts(category, search, pageable);
