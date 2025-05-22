@@ -36,10 +36,10 @@ public class ProductController {
             @RequestParam(required = false) String search,
             @RequestParam(required = false) String ordering,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "8") int size) {
         try {
             Sort sort = Sort.by("id"); // Default sorting by ID
-            if (ordering != null) {
+            if (ordering != null && !ordering.isEmpty()) {
                 if (ordering.startsWith("-")) {
                     sort = Sort.by(ordering.substring(1)).descending(); // Descending order
                 } else {
